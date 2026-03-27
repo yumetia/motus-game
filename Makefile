@@ -12,3 +12,4 @@ down:
 
 clean:
 	docker compose down -v --remove-orphans
+

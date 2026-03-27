@@ -15,12 +15,14 @@ services:
 
   db:
     image: mysql:8.0
+    command: --sql-mode=""
     ports:
       - "9999:3306"
     env_file:
       - .env
     volumes:
       - db_data:/var/lib/mysql
+      - ./server/sql:/docker-entrypoint-initdb.d
 
 volumes:
   db_data:
