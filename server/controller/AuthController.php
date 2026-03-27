@@ -12,6 +12,7 @@ class AuthController {
         $url = $_SERVER['REQUEST_URI'];
 
         match(true) {
+            $method === 'POST' && $url === '/api/auth/check' => $this->check(),
             $method === 'POST' && $url === '/api/login' => $this->login(),
             $method === 'POST' && $url === '/api/register' => $this->register(),
             default => $this->json(["error" => "Method not allowed"], 405)

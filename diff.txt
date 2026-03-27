@@ -1,0 +1,111 @@
+diff --git a/app/css/style.css b/app/css/style.css
+index 74e0f12..e69de29 100644
+--- a/app/css/style.css
++++ b/app/css/style.css
+@@ -1 +0,0 @@
+-!
+\ No newline at end of file
+diff --git a/app/js/game.js b/app/js/game.js
+index c2f00ff..86783b1 100644
+--- a/app/js/game.js
++++ b/app/js/game.js
+@@ -2,4 +2,33 @@
+ // before any other things, we need to send an ajax request to the api so we can decide:
+ // 1) go to the login page by default: user unauthenticated
+ // 2) user auhtenticated: we go to the game page
+-console.log("hello game.js")
+\ No newline at end of file
++
++const API_URL = "http://localhost:8888";
++
++async function checkAuth() {
++    try {
++        const response = await fetch(`${API_URL}/api/auth/check`, {
++            method: "GET",
++            credentials: "include" // sends the session cookie
++        });
++
++        const data = await response.json();
++
++        if (response.ok && data.authenticated) {
++            loadGame();
++        } else {
++            window.location.href = "login";
++        }
++    } catch (error) {
++        console.error("Auth check failed:", error);
++        window.location.href = "login";
++    }
++}
++
++function loadGame() {
++    console.log("user authenticated, loading game...");
++    // game logic here
++}
++
++
++checkAuth();
+diff --git a/app/nginx.conf b/app/nginx.conf
+index 43d8f63..7912e2d 100644
+--- a/app/nginx.conf
++++ b/app/nginx.conf
+@@ -2,4 +2,8 @@ server {
+     listen 80;
+     root /var/www/app;
+     index index.html;
++
++    location / {
++        try_files $uri $uri.html $uri/ =404;
++    }
+ }
+\ No newline at end of file
+diff --git a/server/controller/AuthController.php b/server/controller/AuthController.php
+index 342a142..687f5d4 100644
+--- a/server/controller/AuthController.php
++++ b/server/controller/AuthController.php
+@@ -12,6 +12,7 @@ class AuthController {
+         $url = $_SERVER['REQUEST_URI'];
+ 
+         match(true) {
++            $method === 'POST' && $url === '/api/auth/check' => $this->check(),
+             $method === 'POST' && $url === '/api/login' => $this->login(),
+             $method === 'POST' && $url === '/api/register' => $this->register(),
+             default => $this->json(["error" => "Method not allowed"], 405)
+diff --git a/server/index.php b/server/index.php
+index 00d5d0c..f2e41ce 100644
+--- a/server/index.php
++++ b/server/index.php
+@@ -14,6 +14,7 @@ spl_autoload_register(function($class) {
+ });
+ 
+ $routes = [
++    "/api/auth/check" => "controller/AuthController.php",
+     "/api/login" => "controller/AuthController.php",
+     "/api/register" => "controller/AuthController.php",
+     "/api/game" => "controller/GameController.php",
+diff --git a/server/sql/01_users.sql b/server/sql/01_users.sql
+index e69de29..a1f3481 100644
+--- a/server/sql/01_users.sql
++++ b/server/sql/01_users.sql
+@@ -0,0 +1,7 @@
++CREATE TABLE IF NOT EXISTS users (
++    id INT AUTO_INCREMENT PRIMARY KEY,
++    username VARCHAR(50) NOT NULL UNIQUE,
++    email VARCHAR(100) NOT NULL UNIQUE,
++    password VARCHAR(255) NOT NULL,
++    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
++) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+diff --git a/server/sql/02_leaderboard.sql b/server/sql/02_leaderboard.sql
+index e69de29..7e8de20 100644
+--- a/server/sql/02_leaderboard.sql
++++ b/server/sql/02_leaderboard.sql
+@@ -0,0 +1,9 @@
++CREATE TABLE IF NOT EXISTS leaderboard (
++    id INT AUTO_INCREMENT PRIMARY KEY,
++    user_id INT NOT NULL,
++    attempts INT NOT NULL,
++    won BOOLEAN DEFAULT FALSE,
++    time_seconds INT NOT NULL,
++    played_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
++    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
++) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

@@ -14,6 +14,7 @@ spl_autoload_register(function($class) {
 });
 
 $routes = [
+    "/api/auth/check" => "controller/AuthController.php",
     "/api/login" => "controller/AuthController.php",
     "/api/register" => "controller/AuthController.php",
     "/api/game" => "controller/GameController.php",

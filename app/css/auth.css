@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
+
+:root {
+    --red: #e63946;
+    --yellow: #f4d03f;
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --border: #2a2a2a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    background-color: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(230,57,70,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(230,57,70,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+}
+
+.title {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.15em;
+}
+
+.letter-box {
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: white;
+}
+
+.letter-box.red  { background: var(--red);    border-color: var(--red); }
+.letter-box.yellow { background: var(--yellow); border-color: var(--yellow); color: #111; }
+
+.card-motus {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    width: 100%;
+    max-width: 400px;
+    padding: 2.5rem;
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.input-motus {
+    background: var(--bg) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 2px !important;
+    color: white !important;
+    font-family: 'DM Sans', sans-serif;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.input-motus:focus   { border-color: var(--red) !important; }
+.input-motus.error   { border-color: var(--red) !important; }
+.input-motus.success { border-color: #2ecc71 !important; }
+
+.btn-motus {
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 2px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.1em;
+    padding: 0.75rem 1rem;
+    width: 100%;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+}
+
+.btn-motus:hover    { opacity: 0.85; }
+.btn-motus:active   { transform: scale(0.98); }
+.btn-motus:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.label-motus {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 0.4rem;
+    display: block;
+}
+
+.alert-box {
+    border-radius: 2px;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    display: none;
+}
+
+.alert-error {
+    background: rgba(230,57,70,0.1);
+    border: 1px solid rgba(230,57,70,0.3);
+    color: var(--red);
+}
+
+.alert-success {
+    background: rgba(46,204,113,0.1);
+    border: 1px solid rgba(46,204,113,0.3);
+    color: #2ecc71;
+}
+
+.password-hint {
+    font-size: 0.72rem;
+    color: #444;
+    margin-top: 0.3rem;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.5rem 0;
+}
