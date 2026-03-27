@@ -1,9 +1,9 @@
 <?php
 session_start();
 $routes = [
-    "/login" => "server/view/login.php",
-    "/register" => "server/view/register.php",
-    "/game" => "server/view/game.php",
+    "/login" => "view/login.php",
+    "/register" => "view/register.php",
+    "/game" => "view/game.php",
 ];
 
 $url = $_SERVER['REQUEST_URI'] ?? "/login";
@@ -16,7 +16,7 @@ if (array_key_exists($url, $routes)){
     $page = $routes[$url];
     require_once $page;
 } else {
-    require_once 'html/404.html';
+    require_once 'view/404/404.php';
 }
 
 

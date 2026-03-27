@@ -1,0 +1,26 @@
+services:
+  app:
+    build: ./app
+    ports:
+      - "7777:80"
+
+  php:
+    build: ./server
+    ports:
+      - "8888:80"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "9999:3306"
+    env_file:
+      - .env
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
