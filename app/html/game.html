@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Motus — Jeu</title>
-    <link rel="icon" type="image/x-icon" href="assets/favicon.svg">
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.svg">
     <script src="../js/theme.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4/dist/full.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,10 +27,36 @@
         </div>
     </header>
 
-    <div id="attempts">Tentative <span id="attemptCount">0</span> / 6</div>
-    <div id="message"></div>
-    <div id="grid"></div>
-    <button id="newGameBtn" onclick="startGame()">Nouvelle partie</button>
+    <!-- Difficulty selector -->
+    <div id="difficultyScreen">
+        <p class="difficulty-label">Choisissez votre difficulté</p>
+        <div class="difficulty-btns">
+            <button class="diff-btn easy"   onclick="selectDifficulty('easy')">
+                <span class="diff-name">Facile</span>
+                <span class="diff-hint">4 – 5 lettres</span>
+            </button>
+            <button class="diff-btn normal" onclick="selectDifficulty('normal')">
+                <span class="diff-name">Normal</span>
+                <span class="diff-hint">6 – 7 lettres</span>
+            </button>
+            <button class="diff-btn hard"   onclick="selectDifficulty('hard')">
+                <span class="diff-name">Difficile</span>
+                <span class="diff-hint">8 – 10 lettres</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Game -->
+    <div id="gameScreen" style="display:none; flex-direction:column; align-items:center;">
+        <div id="difficultyBadge"></div>
+        <div id="attempts">Tentative <span id="attemptCount">0</span> / 6</div>
+        <div id="message"></div>
+        <div id="grid"></div>
+        <div class="game-actions">
+            <button id="newGameBtn"      onclick="showDifficulty()">Nouvelle partie</button>
+            <button id="sameDifficultyBtn" onclick="startGame()">Rejouer (même difficulté)</button>
+        </div>
+    </div>
 
     <script src="../js/game.js"></script>
 </body>
