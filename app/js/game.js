@@ -2,25 +2,22 @@
 // before any other things, we need to send an ajax request to the api so we can decide:
 // 1) go to the login page by default: user unauthenticated
 // 2) user auhtenticated: we go to the game page
-
 const API_URL = "http://localhost:8888";
 
-let word = ""
+let word         = "";
 let wordLength   = 0;
 let currentRow   = 0;
 let currentInput = "";
 let gameOver     = false;
+let difficulty   = "normal";
 
 // ─── Auth check ───────────────────────────────────────────────
 async function checkAuth() {
     try {
-        const res = await fetch(`${API_URL}/api/auth/check`, {
-            method: "GET",
-            credentials: "include"
-        });
+        const res  = await fetch(`${API_URL}/api/auth/check`, { method: "GET", credentials: "include" });
         const data = await res.json();
         if (res.ok && data.authenticated) {
-            startGame();
+            showDifficulty();
         } else {
             window.location.href = "/login";
         }
@@ -29,25 +26,45 @@ async function checkAuth() {
     }
 }
 
+// ─── Difficulty screen ────────────────────────────────────────
+function showDifficulty() {
+    document.getElementById("difficultyScreen").style.display = "flex";
+    document.getElementById("gameScreen").style.display       = "none";
+}
+
+function selectDifficulty(d) {
+    difficulty = d;
+    startGame();
+}
+
 // ─── Start / New game ─────────────────────────────────────────
 async function startGame() {
     currentRow   = 0;
     currentInput = "";
     gameOver     = false;
 
+    document.getElementById("difficultyScreen").style.display  = "none";
+    document.getElementById("gameScreen").style.display        = "flex";
+    document.getElementById("newGameBtn").style.display        = "none";
+    document.getElementById("sameDifficultyBtn").style.display = "none";
+    document.getElementById("attemptCount").textContent        = "0";
+
+    const labels = { easy: "Facile", normal: "Normal", hard: "Difficile" };
+    document.getElementById("difficultyBadge").textContent = labels[difficulty] || "";
+    document.getElementById("difficultyBadge").className   = `diff-badge ${difficulty}`;
+
     setMessage("", "");
-    document.getElementById("newGameBtn").style.display = "none";
-    document.getElementById("attemptCount").textContent = "0";
 
     try {
-        const res  = await fetch(`${API_URL}/api/game/word`, {
+        const res  = await fetch(`${API_URL}/api/game/word?difficulty=${difficulty}`, {
             method: "GET",
             credentials: "include"
         });
         const data = await res.json();
 
         if (!res.ok) { setMessage(data.error || "Erreur serveur", "error"); return; }
-        word = data.word
+
+        word       = data.word || "";
         wordLength = data.length;
         buildGrid(data.first_letter);
     } catch (e) {
@@ -57,7 +74,6 @@ async function startGame() {
 
 // ─── Build grid ───────────────────────────────────────────────
 function buildGrid(firstLetter) {
-
     const grid = document.getElementById("grid");
     grid.innerHTML = "";
 
@@ -71,7 +87,6 @@ function buildGrid(firstLetter) {
             cell.classList.add("cell");
             cell.id = `cell-${r}-${c}`;
 
-            // first letter of first row is revealed
             if (r === 0 && c === 0) {
                 cell.textContent = firstLetter;
                 cell.classList.add("correct");
@@ -84,43 +99,33 @@ function buildGrid(firstLetter) {
     }
 
     highlightRow(0);
-
-    // pre-fill first letter in input
     currentInput = firstLetter;
 }
 
 // ─── Keyboard handling ────────────────────────────────────────
 document.addEventListener("keydown", (e) => {
     if (gameOver) return;
+    if (document.getElementById("difficultyScreen").style.display !== "none") return;
 
     const key = e.key.toUpperCase();
 
-    if (e.key === "Backspace") {
-        handleBackspace();
-    } else if (e.key === "Enter") {
-        handleEnter();
-    } else if (/^[A-ZÀÂÄÉÈÊËÎÏÔÙÛÜŸÇŒÆ]$/.test(key)) {
-        handleLetter(key);
-    }
+    if (e.key === "Backspace")       handleBackspace();
+    else if (e.key === "Enter")      handleEnter();
+    else if (/^[A-ZÀÂÄÉÈÊËÎÏÔÙÛÜŸÇŒÆ]$/.test(key)) handleLetter(key);
 });
 
 function handleLetter(letter) {
     if (currentInput.length >= wordLength) return;
-
     currentInput += letter;
-    const col  = currentInput.length - 1;
-    const cell = document.getElementById(`cell-${currentRow}-${col}`);
+    const cell = document.getElementById(`cell-${currentRow}-${currentInput.length - 1}`);
     cell.textContent = letter;
     cell.classList.add("filled");
     setTimeout(() => cell.classList.remove("filled"), 150);
 }
 
 function handleBackspace() {
-    // can't delete the first letter
     if (currentInput.length <= 1) return;
-
-    const col  = currentInput.length - 1;
-    const cell = document.getElementById(`cell-${currentRow}-${col}`);
+    const cell = document.getElementById(`cell-${currentRow}-${currentInput.length - 1}`);
     cell.textContent = "";
     cell.classList.remove("filled");
     currentInput = currentInput.slice(0, -1);
@@ -144,10 +149,7 @@ async function handleEnter() {
         });
         const data = await res.json();
 
-        if (!res.ok) {
-            setMessage(data.error || "Erreur", "error");
-            return;
-        }
+        if (!res.ok) { setMessage(data.error || "Erreur", "error"); return; }
 
         applyResult(data.result);
         document.getElementById("attemptCount").textContent = data.attempts;
@@ -155,20 +157,17 @@ async function handleEnter() {
         if (data.won) {
             gameOver = true;
             setMessage("Bravo ! Mot trouvé 🎉", "win");
-            document.getElementById("newGameBtn").style.display = "inline-block";
+            showEndButtons();
         } else if (data.lost) {
             gameOver = true;
-            setMessage(`Perdu ! Le mot était "${word}". Nouvelle tentative ?`, "lose");
-            document.getElementById("newGameBtn").style.display = "inline-block";
+            setMessage(`Perdu ! Le mot était "${data.word || "?"}". Réessayez ?`, "lose");
+            showEndButtons();
         } else {
             currentRow++;
             currentInput = "";
             highlightRow(currentRow);
-
-            // reveal first letter of next row
-            const firstCell = document.getElementById(`cell-${currentRow}-0`);
-            // first letter is always correct — get it from result[0]
             const firstLetter = data.result[0].letter;
+            const firstCell   = document.getElementById(`cell-${currentRow}-0`);
             firstCell.textContent = firstLetter;
             firstCell.classList.add("correct");
             currentInput = firstLetter;
@@ -178,19 +177,20 @@ async function handleEnter() {
     }
 }
 
-// ─── Apply color result to row ────────────────────────────────
+function showEndButtons() {
+    document.getElementById("newGameBtn").style.display        = "inline-block";
+    document.getElementById("sameDifficultyBtn").style.display = "inline-block";
+}
+
+// ─── Apply result ─────────────────────────────────────────────
 function applyResult(result) {
-   
-    const row = currentRow; // capture now before it changes
+    const row = currentRow;
     result.forEach((item, i) => {
         const cell = document.getElementById(`cell-${row}-${i}`);
         if (!cell) return;
         cell.textContent = item.letter;
         cell.classList.remove("filled", "active-row");
-
-        setTimeout(() => {
-            cell.classList.add(item.status);
-        }, i * 80);
+        setTimeout(() => cell.classList.add(item.status), i * 80);
     });
 }
 
@@ -217,14 +217,9 @@ function setMessage(text, type) {
     el.className   = type;
 }
 
-// ─── Logout ───────────────────────────────────────────────────
 async function logout() {
-    await fetch(`${API_URL}/api/logout`, {
-        method: "POST",
-        credentials: "include"
-    });
+    await fetch(`${API_URL}/api/logout`, { method: "POST", credentials: "include" });
     window.location.href = "/login";
 }
 
-// ─── Init ─────────────────────────────────────────────────────
 checkAuth();

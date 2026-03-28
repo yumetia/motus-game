@@ -4,7 +4,7 @@ class GameController extends Controller {
 
     public function handle(): void {
         $method = $_SERVER['REQUEST_METHOD'];
-        $url = $_SERVER['REQUEST_URI'];
+        $url = strtok($_SERVER['REQUEST_URI'],"?");
 
         match(true) {
             $method === 'GET'  && $url === '/api/game/word'  => $this->getWord(),
@@ -16,7 +16,24 @@ class GameController extends Controller {
     private function getWord(): void {
         $pdo = Database::getInstance()->getPdo();
 
-        $stmt = $pdo->query("SELECT ortho FROM lexique ORDER BY RAND() LIMIT 1");
+        $difficulty = $_GET['difficulty'] ?? 'normal';
+
+        $lengths = match($difficulty) {
+            'easy'   => [4, 5],
+            'normal' => [6, 7],
+            'hard'   => [8, 10],
+            default  => [6, 7]
+        };
+
+        $stmt = $pdo->prepare("
+            SELECT ortho FROM lexique
+            WHERE nblettres BETWEEN :min AND :max
+            AND islem = 1
+            ORDER BY RAND()
+            LIMIT 1
+        ");
+
+        $stmt->execute([':min' => $lengths[0], ':max' => $lengths[1]]);
         $row = $stmt->fetch();
 
         if (!$row) {
@@ -26,16 +43,15 @@ class GameController extends Controller {
 
         $word = strtoupper($row['ortho']);
 
-        $_SESSION['word'] = $word;
-        $_SESSION['attempts'] = 0;
+        $_SESSION['word']       = $word;
+        $_SESSION['attempts']   = 0;
         $_SESSION['start_time'] = time();
+        $_SESSION['difficulty'] = $difficulty;
 
         $this->json([
-            "word"=> $word,
-            "length" => strlen($word),
+            "length"       => strlen($word),
             "first_letter" => $word[0]
         ]);
-        
     }
 
     private function guess(): void {
@@ -73,7 +89,8 @@ class GameController extends Controller {
             "result"   => $result,
             "won"      => $won,
             "lost"     => $lost,
-            "attempts" => $_SESSION['attempts']
+            "attempts" => $_SESSION['attempts'],
+            "word"     => $lost ? $_SESSION['word'] : null
         ]);
     }
 
