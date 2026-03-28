@@ -1,11 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Motus Game</title>
+
+    <!-- Primary -->
+    <meta name="description" content="Jouez à Motus en ligne ! Devinez le mot secret en 6 tentatives. Lettres bien placées, mal placées ou absentes — saurez-vous trouver le mot ?">
+    <meta name="author" content="Motus Game">
+    <meta name="theme-color" content="#ff5555">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Motus — Trouvez le mot !">
+    <meta property="og:description" content="Devinez le mot secret en 6 tentatives. Lettres bien placées, mal placées ou absentes — saurez-vous trouver le mot ?">
+    <meta property="og:image" content="/assets/icon.png">
+    <meta property="og:url" content="http://localhost:7777">
+    <!-- obviously this url will change if we deploy it in production, 
+    as well as the cdn used that we wanna install before anything... -->
+    <meta property="og:locale" content="fr_FR">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Motus — Trouvez le mot !">
+    <meta name="twitter:description" content="Devinez le mot secret en 6 tentatives. Lettres bien placées, mal placées ou absentes — saurez-vous trouver le mot ?">
+    <meta name="twitter:image" content="/assets/icon.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+    <link rel="apple-touch-icon" href="/assets/icon.png">
+
+    <script src="js/theme.js"></script>
+    <script>globalThis.location.href = "/html/game";</script>
 </head>
 <body>
-    <script src="js/game.js"></script>
 </body>
 </html>

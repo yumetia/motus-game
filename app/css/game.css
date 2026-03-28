@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem 3rem;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        linear-gradient(oklch(var(--p) / 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, oklch(var(--p) / 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── Header ── */
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 640px;
+    margin-bottom: 2.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.logo { display: flex; gap: 4px; }
+
+.logo-letter {
+    width: 34px; height: 34px;
+    border: 2px solid oklch(var(--b3));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    color: oklch(var(--bc));
+    border-radius: 2px;
+}
+
+.logo-letter.red    { background: oklch(var(--er)); border-color: oklch(var(--er)); color: oklch(var(--erc)); }
+.logo-letter.yellow { background: oklch(var(--wa)); border-color: oklch(var(--wa)); color: oklch(var(--wac)); }
+
+.header-actions { display: flex; gap: 0.5rem; align-items: center; }
+
+.btn-small {
+    background: oklch(var(--b2));
+    border: 1px solid oklch(var(--b3));
+    color: oklch(var(--bc) / 0.5);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.38rem 0.75rem;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: color 0.2s, border-color 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-small:hover        { color: oklch(var(--bc)); border-color: oklch(var(--bc) / 0.3); }
+.btn-small.danger:hover { color: oklch(var(--er)); border-color: oklch(var(--er)); }
+
+/* ── Attempts counter ── */
+#attempts {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: oklch(var(--bc) / 0.3);
+    margin-bottom: 1.25rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Message ── */
+#message {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.15em;
+    min-height: 2rem;
+    margin-bottom: 1.5rem;
+    color: oklch(var(--bc) / 0.3);
+    position: relative;
+    z-index: 1;
+}
+
+#message.win   { color: oklch(var(--su)); }
+#message.lose  { color: oklch(var(--er)); }
+#message.error { color: oklch(var(--wa)); font-size: 0.9rem; font-family: 'DM Sans', sans-serif; letter-spacing: 0; }
+
+/* ── Grid ── */
+#grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.row { display: flex; gap: 6px; }
+
+.cell {
+    width: 54px; height: 54px;
+    border: 2px solid oklch(var(--b3));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: oklch(var(--bc));
+    border-radius: 3px;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.cell.active-row { border-color: oklch(var(--bc) / 0.25); }
+
+.cell.correct {
+    background: transparent;
+    border: 2px solid oklch(var(--er));
+    color: oklch(var(--er));
+    box-shadow: inset 0 0 0 1px oklch(var(--er) / 0.2);
+}
+
+.cell.misplaced {
+    background: transparent;
+    border-radius: 50%;
+    border: 2px solid oklch(var(--wa));
+    color: oklch(var(--wa));
+}
+
+.cell.wrong {
+    background: oklch(var(--in) / 0.15);
+    border-color: oklch(var(--in));
+    color: oklch(var(--in));
+}
+
+.cell.filled {
+    border-color: oklch(var(--bc) / 0.4);
+    transform: scale(1.06);
+}
+
+/* ── New game button ── */
+#newGameBtn {
+    display: none;
+    background: oklch(var(--p));
+    color: oklch(var(--pc));
+    border: none;
+    border-radius: 3px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.12em;
+    padding: 0.75rem 2.5rem;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    position: relative;
+    z-index: 1;
+}
+
+#newGameBtn:hover  { opacity: 0.85; }
+#newGameBtn:active { transform: scale(0.98); }
+
+/* ── Animations ── */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%       { transform: translateX(-6px); }
+    40%       { transform: translateX(6px); }
+    60%       { transform: translateX(-4px); }
+    80%       { transform: translateX(4px); }
+}
+
+.shake { animation: shake 0.4s ease; }

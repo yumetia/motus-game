@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS leaderboard (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    attempts INT NOT NULL,
+    won BOOLEAN DEFAULT FALSE,
+    time_seconds INT NOT NULL,
+    played_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
