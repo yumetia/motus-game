@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dracula">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motus — Jeu</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.svg">
+    <script src="../js/theme.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4/dist/full.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/game.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <div class="logo-letter red">M</div>
+            <div class="logo-letter yellow">O</div>
+            <div class="logo-letter red">T</div>
+            <div class="logo-letter">U</div>
+            <div class="logo-letter">S</div>
+        </div>
+        <div class="header-actions">
+            <button class="btn-small" id="themeToggle" onclick="cycleTheme()">dracula</button>
+            <a href="leaderboard" class="btn-small">🏆 Classement</a>
+            <button class="btn-small danger" onclick="logout()">Déconnexion</button>
+        </div>
+    </header>
+
+    <div id="attempts">Tentative <span id="attemptCount">0</span> / 6</div>
+    <div id="message"></div>
+    <div id="grid"></div>
+    <button id="newGameBtn" onclick="startGame()">Nouvelle partie</button>
+
+    <script src="../js/game.js"></script>
+</body>
+</html>

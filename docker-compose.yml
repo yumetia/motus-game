@@ -3,6 +3,8 @@ services:
     build: ./app
     ports:
       - "7777:80"
+    volumes:
+      - ./app:/var/www/app  # live reload frontend
 
   php:
     build: ./server
@@ -10,8 +12,11 @@ services:
       - "8888:80"
     env_file:
       - .env
+    volumes:
+      - ./server:/var/www/server  # live reload backend
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: mysql:8.0
@@ -23,6 +28,12 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./server/sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD","mysqladmin","ping","-h","localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 volumes:
   db_data:
+  

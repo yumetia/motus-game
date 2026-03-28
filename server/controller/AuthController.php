@@ -12,7 +12,7 @@ class AuthController {
         $url = $_SERVER['REQUEST_URI'];
 
         match(true) {
-            $method === 'POST' && $url === '/api/auth/check' => $this->check(),
+            $method === 'GET' && $url === '/api/auth/check' => $this->check(),
             $method === 'POST' && $url === '/api/login' => $this->login(),
             $method === 'POST' && $url === '/api/register' => $this->register(),
             default => $this->json(["error" => "Method not allowed"], 405)
@@ -67,10 +67,22 @@ class AuthController {
             'email' => $data['email'],
             'password' => $hashed,
         ]);
+        $user = $this->userModel->findByEmail($data['email']);
+        
+        $_SESSION['user'] = [
+            'id' => $user['id'],
+            'email' => $user['email'],
+        ];
 
         $this->json(["message" => "Register successful"], 201);
     }
-
+    private function check(): void {
+        if (isset($_SESSION['user'])) {
+            $this->json(["authenticated" => true, "user" => $_SESSION['user']]);
+        } else {
+            $this->json(["authenticated" => false], 401);
+        }
+    }
     private function getBody(): array {
         return json_decode(file_get_contents('php://input'), true) ?? [];
     }
