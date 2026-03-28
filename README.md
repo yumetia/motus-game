@@ -29,6 +29,10 @@ cp .env.exemple .env
 ```bash
 make up
 ```
+If you dont have make executable, use raw Docker commands (assuming that you installed it)
+```bash
+docker compose up 
+```
 
 The game is available at **http://localhost:7777**
 
